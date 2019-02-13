@@ -17,15 +17,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.bensound_littleidea);
 
         Button playButton = (Button) findViewById(R.id.playButton);
         Button pauseButton = (Button) findViewById(R.id.pauseButton);
 
+        final Intent intent = new Intent(this, MusicService.class);
+
         // Play music
         playButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mediaPlayer.start();
+                startService(new Intent(getApplicationContext(), MusicService.class));
                 Log.i("test", "test");
             }
         });
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         // Pause music
         pauseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mediaPlayer.stop();
+                stopService(new Intent(getApplicationContext(), MusicService.class));
                 Log.i("test", "test");
             }
         });
