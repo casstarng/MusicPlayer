@@ -28,27 +28,27 @@ public class MusicService extends Service {
         mediaPlayer = MediaPlayer.create(this, R.raw.bensound_littleidea);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
-        Notification notification = notificationBuilder.setOngoing(true)
+        String foregroundId;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            foregroundId = "foregroundID";
+            String foreGroundName = "Music Player Service";
+            NotificationChannel channel = new NotificationChannel(foregroundId, foreGroundName, NotificationManager.IMPORTANCE_HIGH);
+
+            channel.setImportance(NotificationManager.IMPORTANCE_NONE);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            notificationManager.createNotificationChannel(channel);
+        }
+        else{
+            foregroundId = "Bad version";
+        }
+        NotificationCompat.Builder notifactionCompat = new NotificationCompat.Builder(this, foregroundId);
+        Notification notification = notifactionCompat.setOngoing(true)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setPriority(PRIORITY_MIN)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .build();
 
         startForeground(101, notification);
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private String createNotificationChannel(NotificationManager notificationManager){
-        String channelId = "my_service_channelid";
-        String channelName = "My Foreground Service";
-        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
-        // omitted the LED color
-        channel.setImportance(NotificationManager.IMPORTANCE_NONE);
-        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-        notificationManager.createNotificationChannel(channel);
-        return channelId;
     }
 
     @Override
@@ -66,6 +66,6 @@ public class MusicService extends Service {
     public void onDestroy() {
         mediaPlayer.stop();
         mediaPlayer.release();
-        Log.i("test", "onCreate() , service stopped...");
+        Log.i("LOG", "Service stopped");
     }
 }
